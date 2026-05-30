@@ -11,6 +11,10 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { LangProvider } from "../lib/i18n";
+import { AppStateProvider } from "../lib/app-state";
+import { AppHeader } from "../components/AppHeader";
+import { EmergencyButton } from "../components/EmergencyButton";
 
 function NotFoundComponent() {
   return (
@@ -77,14 +81,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Maatri Nepal — Your pregnancy & motherhood companion" },
+      {
+        name: "description",
+        content:
+          "मातृ नेपाल | Maatri Nepal — a warm AI-powered companion guiding mothers through pregnancy, childbirth and postpartum recovery in Nepali and English.",
+      },
+      { name: "author", content: "Maatri Nepal" },
+      { property: "og:title", content: "Maatri Nepal — Pregnancy & motherhood companion" },
+      {
+        property: "og:description",
+        content: "AI-powered maternal companion for mothers in Nepal. Bilingual, gentle, always nearby.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -118,8 +128,16 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <LangProvider>
+        <AppStateProvider>
+          <div className="min-h-screen bg-background text-foreground">
+            <AppHeader />
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+            <EmergencyButton />
+          </div>
+        </AppStateProvider>
+      </LangProvider>
     </QueryClientProvider>
   );
 }
