@@ -97,7 +97,12 @@ function ChatPage() {
               <Sparkles className="h-5 w-5" />
             </span>
             <div>
-              <h1 className="font-display text-xl font-semibold">{tr("askMaatri")}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="font-display text-xl font-semibold">{tr("askMaatri")}</h1>
+                <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+                  Beta
+                </span>
+              </div>
               <p className="text-xs text-muted-foreground">
                 {lang === "ne"
                   ? "म डाक्टरको विकल्प होइन — गम्भीर अवस्थामा चिकित्सक भेट्नुहोस्।"

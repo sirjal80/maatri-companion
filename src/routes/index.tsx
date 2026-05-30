@@ -1,5 +1,4 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import welcomeLogo from "../../Gemini_Generated_Image_20eqa720eqa720eq.png?url";
 
@@ -22,27 +21,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Welcome() {
-  const { tr, lang, setLang } = useLang();
+  const { setLang } = useLang();
   const navigate = useNavigate();
-  const [typedText, setTypedText] = useState("");
-
-  const fullTitle = tr("welcomeTitle") || "Welcome to Maatri Nepal";
-
-  useEffect(() => {
-    setTypedText("");
-    let index = 0;
-
-    const interval = window.setInterval(() => {
-      if (index >= fullTitle.length) {
-        window.clearInterval(interval);
-        return;
-      }
-      setTypedText((current) => current + fullTitle[index]);
-      index += 1;
-    }, 70);
-
-    return () => window.clearInterval(interval);
-  }, [fullTitle, lang]);
 
   const chooseLanguage = (language: "ne" | "en") => {
     setLang(language);
@@ -60,15 +40,8 @@ function Welcome() {
           <img src={welcomeLogo} alt="Maatri Nepal logo" className="h-24 w-24 rounded-3xl border border-border bg-cream p-3 shadow-soft" />
           <div>
             <h1 className="font-display text-5xl font-semibold leading-tight tracking-tight text-foreground sm:text-6xl">
-              {typedText}
-              <span className="typing-cursor inline-block h-[1.1em] w-[0.1em] bg-foreground align-middle" />
+              Maatri Nepal
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
-              {tr("welcomeSub")}
-            </p>
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-muted-foreground/80">
-              {tr("langSub")}
-            </p>
           </div>
         </div>
 

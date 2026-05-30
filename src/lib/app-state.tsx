@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type Phase = "pregnancy" | "postpartum";
+export type Theme = "light" | "dark";
 
 export type Profile = {
   name?: string;
@@ -8,6 +9,8 @@ export type Profile = {
   dueDate?: string;
   bloodGroup?: string;
   emergencyContact?: string;
+  proofFileName?: string;
+  proofFileData?: string;
 };
 
 export type User = {
@@ -26,6 +29,8 @@ type State = {
   setPhase: (p: Phase) => void;
   profile: Profile;
   updateProfile: (p: Partial<Profile>) => void;
+  theme: Theme;
+  setTheme: (t: Theme) => void;
 };
 
 const Ctx = createContext<State>({
@@ -37,6 +42,8 @@ const Ctx = createContext<State>({
   setPhase: () => {},
   profile: { week: 20 },
   updateProfile: () => {},
+  theme: "light",
+  setTheme: () => {},
 });
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
@@ -44,6 +51,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [isGuest, setGuestState] = useState(true);
   const [phase, setPhaseState] = useState<Phase>("pregnancy");
   const [profile, setProfile] = useState<Profile>({ week: 20 });
+  const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -62,17 +70,19 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         if (typeof s.isGuest === "boolean") setGuestState(s.isGuest);
         if (s.phase === "pregnancy" || s.phase === "postpartum") setPhaseState(s.phase);
         if (s.profile && typeof s.profile === "object") setProfile({ week: 20, ...s.profile });
+        if (s.theme === "light" || s.theme === "dark") setThemeState(s.theme);
       }
     } catch {}
   }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem(
       "maatri.state",
-      JSON.stringify({ user, isGuest, phase, profile }),
+      JSON.stringify({ user, isGuest, phase, profile, theme }),
     );
-  }, [user, isGuest, phase, profile]);
+  }, [user, isGuest, phase, profile, theme]);
 
   return (
     <Ctx.Provider
@@ -85,6 +95,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         setPhase: setPhaseState,
         profile,
         updateProfile: (p) => setProfile((prev) => ({ ...prev, ...p })),
+        theme,
+        setTheme: setThemeState,
       }}
     >
       {children}

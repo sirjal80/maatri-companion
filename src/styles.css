@@ -77,8 +77,8 @@
   --font-sans: "Inter", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
 
   /* Warm creamy white base */
-  --background: oklch(0.985 0.01 95);
-  --cream: oklch(0.99 0.015 92);
+  --background: oklch(0.97 0.05 165);
+  --cream: oklch(0.98 0.03 180);
   --foreground: oklch(0.18 0.05 22);
 
   --card: oklch(0.995 0.01 92);
@@ -86,24 +86,21 @@
   --popover: oklch(0.995 0.01 92);
   --popover-foreground: oklch(0.18 0.05 22);
 
-  /* Warm yellow/orange primary */
-  --primary: oklch(0.82 0.22 96);
-  --primary-foreground: oklch(0.11 0.16 94);
+  --primary: oklch(0.65 0.18 145);
+  --primary-foreground: oklch(0.10 0.10 20);
 
-  /* Soft golden accent */
-  --blush: oklch(0.95 0.14 100);
-  --blush-foreground: oklch(0.12 0.16 94);
+  --blush: oklch(0.92 0.14 150);
+  --blush-foreground: oklch(0.12 0.16 24);
 
-  /* Light orange secondary */
-  --secondary: oklch(0.93 0.14 98);
-  --secondary-foreground: oklch(0.12 0.16 94);
-  --lavender: oklch(0.93 0.18 90);
-  --lavender-foreground: oklch(0.14 0.16 92);
+  --secondary: oklch(0.86 0.12 136);
+  --secondary-foreground: oklch(0.12 0.16 24);
+  --lavender: oklch(0.92 0.12 160);
+  --lavender-foreground: oklch(0.13 0.14 29);
 
-  --muted: oklch(0.95 0.015 60);
-  --muted-foreground: oklch(0.45 0.03 30);
-  --accent: oklch(0.88 0.015 70);
-  --accent-foreground: oklch(0.19 0.04 23);
+  --muted: oklch(0.92 0.03 120);
+  --muted-foreground: oklch(0.42 0.03 28);
+  --accent: oklch(0.75 0.21 35);
+  --accent-foreground: oklch(0.99 0.01 35);
 
   /* Warm orange / ember for alerts */
   --ember: oklch(0.7 0.18 45);
@@ -186,9 +183,9 @@
 @layer utilities {
   .bg-warm-gradient {
     background-image:
-      radial-gradient(at 15% 10%, oklch(0.95 0.18 98 / 0.7) 0px, transparent 40%),
-      radial-gradient(at 80% 0%, oklch(0.94 0.22 105 / 0.55) 0px, transparent 40%),
-      radial-gradient(at 60% 90%, oklch(0.92 0.12 92 / 0.35) 0px, transparent 55%),
+      radial-gradient(at 15% 10%, oklch(0.82 0.22 140 / 0.6) 0px, transparent 38%),
+      radial-gradient(at 80% 0%, oklch(0.76 0.18 125 / 0.45) 0px, transparent 42%),
+      radial-gradient(at 50% 90%, oklch(0.92 0.15 90 / 0.22) 0px, transparent 55%),
       linear-gradient(180deg, var(--cream), var(--background));
   }
   .glass-card {

@@ -5,13 +5,18 @@ import { useAppState } from "@/lib/app-state";
 
 export function AppHeader() {
   const { tr, lang, setLang } = useLang();
-  const { user, setUser, setGuest } = useAppState();
+  const { user, setUser, setGuest, theme, setTheme } = useAppState();
   const nav = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   if (["/", "/language", "/mode", "/login"].includes(path)) return null;
 
-  const links: Array<{ to: string; key: "dashboard" | "chat" | "hospitals" }> = [
+  const links: Array<{
+    to: string;
+    key: "dashboard" | "symptoms" | "healthAwareness" | "chat" | "hospitals";
+  }> = [
     { to: "/dashboard", key: "dashboard" },
+    { to: "/dashboard#symptoms", key: "symptoms" },
+    { to: "/dashboard#health-awareness", key: "healthAwareness" },
     { to: "/chat", key: "chat" },
     { to: "/hospitals", key: "hospitals" },
   ];
@@ -27,7 +32,7 @@ export function AppHeader() {
         </Link>
         <nav className="hidden gap-1 sm:flex">
           {links.map((l) => {
-            const active = path.startsWith(l.to);
+            const active = l.to.startsWith("/dashboard") ? path === "/dashboard" : path.startsWith(l.to);
             return (
               <Link
                 key={l.to}
@@ -61,6 +66,12 @@ export function AppHeader() {
               {tr("loginAction")}
             </Link>
           )}
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
+          >
+            {theme === "dark" ? tr("lightMode") : tr("darkMode")}
+          </button>
           <button
             onClick={() => setLang(lang === "en" ? "ne" : "en")}
             className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"

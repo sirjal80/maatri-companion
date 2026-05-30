@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { MessageCircleHeart, MapPin, HeartPulse, Baby, Sparkles, Salad, Sun } from "lucide-react";
 import { useLang, type Lang } from "@/lib/i18n";
 import { useAppState } from "@/lib/app-state";
@@ -28,11 +29,61 @@ function babySize(week: number, lang: Lang) {
   return sizeChart[closest][lang];
 }
 
+type RequestItem = {
+  id: number;
+  type: "blood" | "charity";
+  title: string;
+  details: string;
+  contact: string;
+  image?: string;
+  createdAt: string;
+  author: string;
+};
+
+const REQUESTS_STORAGE_KEY = "maatri.communityRequests";
+
 function Dashboard() {
   const { tr, lang } = useLang();
   const { profile, updateProfile, phase, setPhase, user } = useAppState();
   const week = profile.week ?? 20;
   const userName = user?.name || (lang === "ne" ? "आमा" : "Aama❤️");
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [requestType, setRequestType] = useState<"blood" | "charity">("blood");
+  const [requestTitle, setRequestTitle] = useState("");
+  const [requestDetails, setRequestDetails] = useState("");
+  const [contactNumber, setContactNumber] = useState(profile.emergencyContact ?? "");
+  const [uploadedBill, setUploadedBill] = useState<string | null>(null);
+  const [communityRequests, setCommunityRequests] = useState<RequestItem[]>([]);
+  const [feedback, setFeedback] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = localStorage.getItem(REQUESTS_STORAGE_KEY);
+    if (stored) {
+      try {
+        setCommunityRequests(JSON.parse(stored));
+      } catch {
+        setCommunityRequests([]);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem(REQUESTS_STORAGE_KEY, JSON.stringify(communityRequests));
+  }, [communityRequests]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hash = window.location.hash;
+    if (hash) {
+      const target = document.querySelector(hash);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, []);
 
   const ppTips =
     lang === "ne"
@@ -153,6 +204,50 @@ function Dashboard() {
                   className="mt-2 w-full rounded-2xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                 />
               </label>
+              <label className="block">
+                <span className="text-muted-foreground">{tr("uploadProfileData")}</span>
+                <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        if (typeof reader.result === "string") {
+                          updateProfile({ proofFileName: file.name, proofFileData: reader.result });
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="inline-flex items-center justify-center rounded-2xl border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted"
+                  >
+                    {tr("uploadButton")}
+                  </button>
+                  <span className="truncate text-sm text-muted-foreground">
+                    {profile.proofFileName ?? tr("noFileSelected")}
+                  </span>
+                </div>
+              </label>
+              {profile.proofFileName ? (
+                <div className="mt-2 flex items-center justify-between gap-3 rounded-2xl border border-border bg-background px-3 py-2 text-sm text-muted-foreground">
+                  <span>{tr("uploadedFile")} {profile.proofFileName}</span>
+                  <button
+                    type="button"
+                    onClick={() => updateProfile({ proofFileName: undefined, proofFileData: undefined })}
+                    className="rounded-full border border-border px-3 py-1 text-xs text-foreground hover:bg-muted"
+                  >
+                    {tr("removeFile")}
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -200,6 +295,179 @@ function Dashboard() {
               </div>
             </div>
           </Link>
+        </div>
+
+        <div className="mt-6 rounded-3xl border border-border bg-card/80 p-6 shadow-soft" id="symptoms">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">{tr("symptoms")}</p>
+              <h2 className="mt-2 font-display text-2xl font-semibold">{tr("dangerSigns")}</h2>
+              <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{tr("symptomsIntro")}</p>
+            </div>
+            <Link
+              to="/emergency"
+              className="inline-flex rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/95"
+            >
+              {tr("viewAllDangerSigns")}
+            </Link>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              lang === "ne" ? "भारी रक्तस्राव" : "Heavy bleeding",
+              lang === "ne" ? "तीव्र पेट दुखाइ" : "Severe abdominal pain",
+              lang === "ne" ? "बच्चाको चाल कम भएको" : "Reduced baby movement",
+            ].map((item) => (
+              <div key={item} className="rounded-3xl border border-border bg-background/70 p-4 text-sm text-muted-foreground">
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-3xl border border-border bg-card/80 p-6 shadow-soft" id="health-awareness">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">{tr("healthAwareness")}</p>
+              <h2 className="mt-2 font-display text-2xl font-semibold">{tr("healthAwareness")}</h2>
+              <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{tr("healthAwarenessIntro")}</p>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (!requestTitle.trim() || !requestDetails.trim()) {
+                  setFeedback(tr("fillFields"));
+                  return;
+                }
+                if (requestType === "blood" && !contactNumber.trim()) {
+                  setFeedback(tr("contactRequired"));
+                  return;
+                }
+                const nextRequest: RequestItem = {
+                  id: Date.now(),
+                  type: requestType,
+                  title: requestTitle.trim(),
+                  details: requestDetails.trim(),
+                  contact: contactNumber.trim(),
+                  image: uploadedBill ?? undefined,
+                  createdAt: new Date().toISOString(),
+                  author: user?.name || (lang === "ne" ? "अतिथि" : "Guest"),
+                };
+                setCommunityRequests((prev) => [nextRequest, ...prev]);
+                setRequestTitle("");
+                setRequestDetails("");
+                setUploadedBill(null);
+                setFeedback(tr("requestPosted"));
+              }}
+              className="space-y-4"
+            >
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="block">
+                  <span className="text-sm text-muted-foreground">{tr("requestTypeLabel")}</span>
+                  <select
+                    value={requestType}
+                    onChange={(event) => setRequestType(event.target.value as "blood" | "charity")}
+                    className="mt-2 w-full rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                  >
+                    <option value="blood">{tr("requestTypeBlood")}</option>
+                    <option value="charity">{tr("requestTypeCharity")}</option>
+                  </select>
+                </label>
+                <label className="block">
+                  <span className="text-sm text-muted-foreground">{tr("requestTitleLabel")}</span>
+                  <input
+                    value={requestTitle}
+                    onChange={(event) => setRequestTitle(event.target.value)}
+                    placeholder={tr("requestTitleLabel")}
+                    className="mt-2 w-full rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                  />
+                </label>
+              </div>
+              <label className="block">
+                <span className="text-sm text-muted-foreground">{tr("requestDetailsLabel")}</span>
+                <textarea
+                  value={requestDetails}
+                  onChange={(event) => setRequestDetails(event.target.value)}
+                  rows={4}
+                  placeholder={tr("requestDetailsLabel")}
+                  className="mt-2 w-full rounded-3xl border border-border bg-background px-3 py-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm text-muted-foreground">{tr("requestContact")}</span>
+                <input
+                  value={contactNumber}
+                  onChange={(event) => setContactNumber(event.target.value)}
+                  placeholder={lang === "ne" ? "+977 98..." : "+977 ..."}
+                  className="mt-2 w-full rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm text-muted-foreground">{tr("uploadProof")}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => setUploadedBill(String(reader.result));
+                    reader.readAsDataURL(file);
+                  }}
+                  className="mt-2 w-full rounded-2xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                />
+              </label>
+              {uploadedBill && (
+                <img src={uploadedBill} alt="Bill proof" className="mt-2 h-40 w-full rounded-3xl object-cover" />
+              )}
+              {feedback ? <p className="text-sm text-primary">{feedback}</p> : null}
+              <button
+                type="submit"
+                className="inline-flex rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/95"
+              >
+                {tr("submitRequest")}
+              </button>
+            </form>
+
+            <div className="rounded-3xl bg-background/80 p-5">
+              <h3 className="font-display text-lg font-semibold">{tr("communityPosts")}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{tr("communityPostsIntro")}</p>
+              <div className="mt-5 space-y-4">
+                {communityRequests.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">{tr("noRequests")}</p>
+                ) : (
+                  communityRequests.map((request) => (
+                    <div key={request.id} className="rounded-3xl border border-border bg-card p-4">
+                      <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                        <span className={request.type === "blood" ? "text-ember" : "text-secondary-foreground"}>
+                          {request.type === "blood" ? tr("requestTypeBlood") : tr("requestTypeCharity")}
+                        </span>
+                        <span>{new Date(request.createdAt).toLocaleDateString(lang === "ne" ? "ne-NP" : "en-US")}</span>
+                      </div>
+                      <h4 className="mt-3 text-base font-semibold text-foreground">{request.title}</h4>
+                      <p className="mt-2 text-sm text-muted-foreground">{request.details}</p>
+                      {request.image ? (
+                        <img src={request.image} alt={request.title} className="mt-4 h-40 w-full rounded-3xl object-cover" />
+                      ) : null}
+                      <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+                        <div className="flex items-center justify-between gap-3">
+                          <span>{tr("requestContact")}</span>
+                          <a href={`tel:${request.contact}`} className="font-medium text-primary">
+                            {request.contact}
+                          </a>
+                        </div>
+                        <div className="flex items-center justify-between gap-3">
+                          <span>{tr("requestPostedBy")}</span>
+                          <span>{request.author}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {phase === "pregnancy" && (
