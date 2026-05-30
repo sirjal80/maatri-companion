@@ -15,13 +15,49 @@ function ChatPage() {
   const { tr, lang } = useLang();
   const { phase, profile, setPhase } = useAppState();
   const [input, setInput] = useState("");
+  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [storedChatgptKey, setStoredChatgptKey] = useState<string | null>(null);
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [apiKeyStatus, setApiKeyStatus] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("maatri.openaiKey") : null;
+    const normalized = stored && stored.trim() ? stored.trim() : null;
+    setStoredChatgptKey(normalized);
+    setApiKeyInput(normalized ?? "");
+  }, []);
+
+  const saveApiKey = () => {
+    const trimmed = apiKeyInput.trim();
+    if (trimmed) {
+      localStorage.setItem("maatri.openaiKey", trimmed);
+      setStoredChatgptKey(trimmed);
+      setApiKeyStatus(tr("openAiKeySaved"));
+      return;
+    }
+    localStorage.removeItem("maatri.openaiKey");
+    setStoredChatgptKey(null);
+    setApiKeyStatus(tr("openAiKeyCleared"));
+  };
+
+  const clearApiKey = () => {
+    setApiKeyInput("");
+    localStorage.removeItem("maatri.openaiKey");
+    setStoredChatgptKey(null);
+    setApiKeyStatus(tr("openAiKeyCleared"));
+  };
 
   const { messages, sendMessage, status, error } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
-      body: () => ({ language: lang, phase, profile }),
+      body: () => ({
+        language: lang,
+        phase,
+        profile,
+        openAIApiKey: storedChatgptKey ?? undefined,
+      }),
     }),
   });
 
@@ -55,19 +91,64 @@ function ChatPage() {
   return (
     <main className="bg-warm-gradient min-h-[calc(100svh-65px)] px-4 py-6 sm:px-6">
       <div className="mx-auto flex h-[calc(100svh-110px)] max-w-3xl flex-col">
-        <div className="mb-3 flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-blush text-primary">
-            <Sparkles className="h-5 w-5" />
-          </span>
-          <div>
-            <h1 className="font-display text-xl font-semibold">{tr("askMaatri")}</h1>
-            <p className="text-xs text-muted-foreground">
-              {lang === "ne"
-                ? "म डाक्टरको विकल्प होइन — गम्भीर अवस्थामा चिकित्सक भेट्नुहोस्।"
-                : "I'm not a replacement for a doctor — please consult one for serious concerns."}
-            </p>
+        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-blush text-primary">
+              <Sparkles className="h-5 w-5" />
+            </span>
+            <div>
+              <h1 className="font-display text-xl font-semibold">{tr("askMaatri")}</h1>
+              <p className="text-xs text-muted-foreground">
+                {lang === "ne"
+                  ? "म डाक्टरको विकल्प होइन — गम्भीर अवस्थामा चिकित्सक भेट्नुहोस्।"
+                  : "I'm not a replacement for a doctor — please consult one for serious concerns."}
+              </p>
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setShowApiKeyInput((current) => !current)}
+            className="rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground transition hover:bg-muted"
+          >
+            {showApiKeyInput ? "Hide key" : "Use my ChatGPT key"}
+          </button>
         </div>
+
+        {showApiKeyInput && (
+          <div className="mb-4 rounded-3xl border border-border bg-card p-4 text-sm text-foreground">
+            <label className="block text-xs font-medium uppercase tracking-[0.25em] text-muted-foreground">
+              {tr("useOwnKey")}
+            </label>
+            <p className="mt-2 text-xs text-muted-foreground">{tr("openAiKeyHelp")}</p>
+            <textarea
+              value={apiKeyInput}
+              onChange={(event) => setApiKeyInput(event.target.value)}
+              rows={2}
+              placeholder="sk-..."
+              className="mt-3 w-full resize-none rounded-2xl border border-border bg-background px-3 py-3 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+            />
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={saveApiKey}
+                className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition hover:bg-primary/90"
+              >
+                {tr("saveApiKeyButton")}
+              </button>
+              <button
+                type="button"
+                onClick={clearApiKey}
+                className="rounded-full border border-border px-4 py-2 text-xs text-foreground transition hover:bg-muted"
+              >
+                {tr("clearApiKeyButton")}
+              </button>
+            </div>
+            {storedChatgptKey ? (
+              <p className="mt-3 text-xs text-secondary-foreground">{tr("usingOwnKey")}</p>
+            ) : null}
+            {apiKeyStatus ? <p className="mt-2 text-xs text-muted-foreground">{apiKeyStatus}</p> : null}
+          </div>
+        )}
 
         <div
           ref={scrollRef}

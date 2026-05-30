@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { createLovableAiGatewayProvider, createOpenAiGatewayProvider } from "@/lib/ai-gateway.server";
 
 type Body = {
   messages?: unknown;
   language?: "ne" | "en";
   phase?: "pregnancy" | "postpartum";
   profile?: Record<string, unknown> | null;
+  openAIApiKey?: string;
 };
 
 function systemPrompt(language: "ne" | "en", phase: "pregnancy" | "postpartum", profile: Record<string, unknown> | null) {
@@ -38,11 +39,29 @@ export const Route = createFileRoute("/api/chat")({
         if (!Array.isArray(body.messages)) {
           return new Response("messages required", { status: 400 });
         }
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        const key =
+          body.openAIApiKey?.trim() ||
+          process.env.OPENAI_API_KEY?.trim() ||
+          process.env.VITE_OPENAI_API_KEY?.trim() ||
+          process.env.LOVABLE_API_KEY?.trim();
+        if (!key) {
+          return new Response(
+            "Missing API key: set OPENAI_API_KEY or LOVABLE_API_KEY on the server",
+            { status: 500 },
+          );
+        }
 
-        const gateway = createLovableAiGatewayProvider(key);
-        const model = gateway("google/gemini-3-flash-preview");
+        const useOpenAI = Boolean(
+          body.openAIApiKey?.trim() ||
+          process.env.OPENAI_API_KEY?.trim() ||
+          process.env.VITE_OPENAI_API_KEY?.trim(),
+        );
+        const gateway = useOpenAI
+          ? createOpenAiGatewayProvider(key)
+          : createLovableAiGatewayProvider(key);
+        const model = useOpenAI
+          ? gateway("gpt-3.5-turbo")
+          : gateway("google/gemini-3-flash-preview");
 
         const result = streamText({
           model,

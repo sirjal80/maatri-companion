@@ -1,55 +1,92 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
-import heroImg from "@/assets/welcome-hero.jpg";
+import welcomeLogo from "../../Gemini_Generated_Image_20eqa720eqa720eq.png?url";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Maatri Nepal — Welcome" },
-      { name: "description", content: "A warm AI-powered companion for pregnancy and motherhood in Nepal." },
-      { property: "og:title", content: "Maatri Nepal — Welcome" },
-      { property: "og:description", content: "A warm AI-powered companion for pregnancy and motherhood in Nepal." },
+      { title: "Welcome To Maatri Nepal Your Companion in Pregnancy" },
+      {
+        name: "description",
+        content: "Select Nepali or English to begin your journey with Maatri Nepal.",
+      },
+      { property: "og:title", content: "Welcome To Maatri Nepal Your Companion in Pregnancy" },
+      {
+        property: "og:description",
+        content: "A warm, bilingual maternal companion experience for mothers in Nepal.",
+      },
     ],
   }),
   component: Welcome,
 });
 
 function Welcome() {
-  const { tr } = useLang();
+  const { tr, lang, setLang } = useLang();
+  const navigate = useNavigate();
+  const [typedText, setTypedText] = useState("");
+
+  const fullTitle = tr("welcomeTitle") || "Welcome to Maatri Nepal";
+
+  useEffect(() => {
+    setTypedText("");
+    let index = 0;
+
+    const interval = window.setInterval(() => {
+      if (index >= fullTitle.length) {
+        window.clearInterval(interval);
+        return;
+      }
+      setTypedText((current) => current + fullTitle[index]);
+      index += 1;
+    }, 70);
+
+    return () => window.clearInterval(interval);
+  }, [fullTitle, lang]);
+
+  const chooseLanguage = (language: "ne" | "en") => {
+    setLang(language);
+    navigate({ to: "/mode" });
+  };
+
   return (
-    <main className="bg-warm-gradient relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden px-6 py-12">
-      <div className="relative z-10 mx-auto grid w-full max-w-5xl items-center gap-10 md:grid-cols-2">
-        <div className="text-center md:text-left">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3 py-1 text-xs font-medium tracking-wide text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            मातृ नेपाल · Maatri Nepal
-          </p>
-          <h1 className="font-display text-4xl font-semibold leading-[1.05] text-foreground sm:text-5xl md:text-6xl">
-            {tr("welcomeTitle")}
-          </h1>
-          <p className="mt-3 font-display text-2xl text-primary sm:text-3xl">Welcome to Maatri Nepal</p>
-          <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
-            {tr("welcomeSub")}
-          </p>
-          <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground/80">
-            Your trusted companion throughout pregnancy and motherhood.
-          </p>
-          <Link
-            to="/language"
-            className="mt-10 inline-flex items-center justify-center rounded-full bg-primary px-8 py-3.5 text-base font-semibold text-primary-foreground shadow-soft transition-all hover:scale-[1.02] hover:bg-primary/95 active:scale-[0.98]"
-          >
-            {tr("begin")} →
-          </Link>
+    <main className="bg-warm-gradient relative flex min-h-[100svh] items-center justify-center overflow-hidden px-6 py-12">
+      <div className="pointer-events-none absolute left-6 top-8 hidden rounded-3xl border border-border bg-card/90 p-3 shadow-soft sm:block">
+        <img src={welcomeLogo} alt="Maatri Nepal logo" className="h-16 w-16 rounded-2xl object-cover" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-4xl rounded-[2.5rem] border border-border bg-card/95 p-10 shadow-soft backdrop-blur-xl">
+        <div className="flex flex-col items-center gap-8 text-center">
+          <img src={welcomeLogo} alt="Maatri Nepal logo" className="h-24 w-24 rounded-3xl border border-border bg-cream p-3 shadow-soft" />
+          <div>
+            <h1 className="font-display text-5xl font-semibold leading-tight tracking-tight text-foreground sm:text-6xl">
+              {typedText}
+              <span className="typing-cursor inline-block h-[1.1em] w-[0.1em] bg-foreground align-middle" />
+            </h1>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
+              {tr("welcomeSub")}
+            </p>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-muted-foreground/80">
+              {tr("langSub")}
+            </p>
+          </div>
         </div>
-        <div className="relative mx-auto w-full max-w-sm md:max-w-md">
-          <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-blush/40 blur-3xl" />
-          <img
-            src={heroImg}
-            alt="A peaceful pregnant mother cradling her belly, surrounded by lotus flowers"
-            width={1024}
-            height={1280}
-            className="w-full rounded-[2rem] shadow-soft"
-          />
+
+        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+          <button
+            onClick={() => chooseLanguage("en")}
+            className="rounded-[1.75rem] border border-border bg-primary px-8 py-6 text-left text-foreground shadow-soft transition hover:-translate-y-0.5 hover:bg-primary/95"
+          >
+            <span className="block text-2xl font-semibold">English</span>
+            <span className="mt-2 block text-sm text-primary-foreground/90">Continue in English</span>
+          </button>
+          <button
+            onClick={() => chooseLanguage("ne")}
+            className="rounded-[1.75rem] border border-border bg-secondary px-8 py-6 text-left text-secondary-foreground shadow-soft transition hover:-translate-y-0.5 hover:bg-secondary/95"
+          >
+            <span className="block text-2xl font-semibold">नेपाली</span>
+            <span className="mt-2 block text-sm text-secondary-foreground/90">नेपालीमा अगाडि बढ्नुहोस्</span>
+          </button>
         </div>
       </div>
     </main>

@@ -18,6 +18,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiAuthRouteImport } from './routes/api/auth'
 
 const ModeRoute = ModeRouteImport.update({
   id: '/mode',
@@ -64,6 +65,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthRoute = ApiAuthRouteImport.update({
+  id: '/api/auth',
+  path: '/api/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/language': typeof LanguageRoute
   '/login': typeof LoginRoute
   '/mode': typeof ModeRoute
+  '/api/auth': typeof ApiAuthRoute
   '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/language': typeof LanguageRoute
   '/login': typeof LoginRoute
   '/mode': typeof ModeRoute
+  '/api/auth': typeof ApiAuthRoute
   '/api/chat': typeof ApiChatRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/language': typeof LanguageRoute
   '/login': typeof LoginRoute
   '/mode': typeof ModeRoute
+  '/api/auth': typeof ApiAuthRoute
   '/api/chat': typeof ApiChatRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/language'
     | '/login'
     | '/mode'
+    | '/api/auth'
     | '/api/chat'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/language'
     | '/login'
     | '/mode'
+    | '/api/auth'
     | '/api/chat'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/language'
     | '/login'
     | '/mode'
+    | '/api/auth'
     | '/api/chat'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   LanguageRoute: typeof LanguageRoute
   LoginRoute: typeof LoginRoute
   ModeRoute: typeof ModeRoute
+  ApiAuthRoute: typeof ApiAuthRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth': {
+      id: '/api/auth'
+      path: '/api/auth'
+      fullPath: '/api/auth'
+      preLoaderRoute: typeof ApiAuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   LanguageRoute: LanguageRoute,
   LoginRoute: LoginRoute,
   ModeRoute: ModeRoute,
+  ApiAuthRoute: ApiAuthRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport

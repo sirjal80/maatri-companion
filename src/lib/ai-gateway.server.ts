@@ -10,3 +10,11 @@ export function createLovableAiGatewayProvider(lovableApiKey: string) {
     },
   });
 }
+
+export function createOpenAiGatewayProvider(openAIApiKey: string) {
+  return createOpenAICompatible({
+    name: "openai",
+    baseURL: "https://api.openai.com/v1",
+    apiKey: openAIApiKey,
+  });
+}

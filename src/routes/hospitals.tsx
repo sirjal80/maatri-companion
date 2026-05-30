@@ -9,40 +9,40 @@ export const Route = createFileRoute("/hospitals")({
 
 const HOSPITALS = [
   {
-    name: { en: "Paropakar Maternity & Women's Hospital", ne: "परोपकार प्रसूति तथा स्त्री रोग अस्पताल" },
-    area: { en: "Thapathali, Kathmandu", ne: "थापाथली, काठमाडौं" },
-    phone: "01-4260106",
+    name: { en: "Lumbini Provincial Hospital", ne: "लुम्बिनी प्रादेशिक अस्पताल" },
+    area: { en: "Butwal, Lumbini", ne: "बुटवल, लुम्बिनी" },
+    phone: "071-520110",
     tag: { en: "Government · Maternity", ne: "सरकारी · प्रसूति" },
   },
   {
-    name: { en: "Tribhuvan University Teaching Hospital", ne: "त्रिभुवन विश्वविद्यालय शिक्षण अस्पताल" },
-    area: { en: "Maharajgunj, Kathmandu", ne: "महाराजगन्ज, काठमाडौं" },
-    phone: "01-4412303",
-    tag: { en: "Government · Multi-specialty", ne: "सरकारी · बहुविशेषज्ञता" },
+    name: { en: "Kist Medical College & Teaching Hospital", ne: "किस्ट मेडिकल कलेज एण्ड टीचिङ अस्पताल" },
+    area: { en: "Butwal, Lumbini", ne: "बुटवल, लुम्बिनी" },
+    phone: "071-580100",
+    tag: { en: "Private · Teaching", ne: "निजी · शिक्षण" },
   },
   {
-    name: { en: "Norvic International Hospital", ne: "नर्भिक इन्टरनेसनल अस्पताल" },
-    area: { en: "Thapathali, Kathmandu", ne: "थापाथली, काठमाडौं" },
-    phone: "01-5970032",
+    name: { en: "Global Hospital & Research Center", ne: "ग्लोबल अस्पताल एण्ड रिसर्च सेन्टर" },
+    area: { en: "Butwal, Lumbini", ne: "बुटवल, लुम्बिनी" },
+    phone: "071-520333",
     tag: { en: "Private · Maternity care", ne: "निजी · प्रसूति सेवा" },
   },
   {
-    name: { en: "Grande International Hospital", ne: "ग्रान्डे इन्टरनेसनल अस्पताल" },
-    area: { en: "Dhapasi, Kathmandu", ne: "धापासी, काठमाडौं" },
-    phone: "01-5159266",
-    tag: { en: "Private · Multi-specialty", ne: "निजी · बहुविशेषज्ञता" },
+    name: { en: "Shree Ganga Maternity Hospital", ne: "श्री गंगा प्रसूति अस्पताल" },
+    area: { en: "Butwal, Lumbini", ne: "बुटवल, लुम्बिनी" },
+    phone: "071-542345",
+    tag: { en: "Private · Maternity", ne: "निजी · प्रसूति" },
   },
   {
-    name: { en: "B&B Hospital", ne: "बी एण्ड बी अस्पताल" },
-    area: { en: "Gwarko, Lalitpur", ne: "ग्वार्को, ललितपुर" },
-    phone: "01-5533206",
+    name: { en: "Butwal Nursing Home", ne: "बुटवल नर्सिङ होम" },
+    area: { en: "Butwal, Lumbini", ne: "बुटवल, लुम्बिनी" },
+    phone: "071-520100",
     tag: { en: "Private · Maternity & Pediatric", ne: "निजी · प्रसूति र बालरोग" },
   },
   {
-    name: { en: "Manipal Teaching Hospital", ne: "मणिपाल शिक्षण अस्पताल" },
-    area: { en: "Phulbari, Pokhara", ne: "फूलबारी, पोखरा" },
-    phone: "061-526416",
-    tag: { en: "Government · Maternity", ne: "सरकारी · प्रसूति" },
+    name: { en: "Royal Tulip Hospital", ne: "रायल ट्युलिप अस्पताल" },
+    area: { en: "Butwal, Lumbini", ne: "बुटवल, लुम्बिनी" },
+    phone: "071-520222",
+    tag: { en: "Private · General", ne: "निजी · सामान्य" },
   },
 ];
 
@@ -57,6 +57,9 @@ function HospitalsPage() {
             {lang === "ne"
               ? "नेपालका प्रमुख प्रसूति अस्पताल र क्लिनिक — एकै ठाउँमा।"
               : "Trusted maternity hospitals and clinics across Nepal."}
+          </p>
+          <p className="mt-4 text-sm text-muted-foreground">
+            {tr("bookDescription")}
           </p>
         </div>
 
@@ -73,10 +76,10 @@ function HospitalsPage() {
                 </div>
                 <Star className="h-4 w-4 fill-ember text-ember" />
               </div>
-              <div className="mt-4 flex gap-2">
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 <a
                   href={`tel:${h.phone}`}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/95"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/95"
                 >
                   <Phone className="h-4 w-4" /> {tr("callNow")}
                 </a>
@@ -84,9 +87,31 @@ function HospitalsPage() {
                   href={`https://www.google.com/maps/search/${encodeURIComponent(h.name.en)}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
                 >
                   <MapPin className="h-4 w-4" /> {tr("directions")}
+                </a>
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <a
+                  href={`https://www.google.com/search?q=${encodeURIComponent(
+                    `${h.name.en} appointment`,
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  {tr("bookAppointment")}
+                </a>
+                <a
+                  href={`https://www.google.com/search?q=${encodeURIComponent(
+                    `${h.name.en} online doctor consultation`,
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  {tr("bookOnlineMeeting")}
                 </a>
               </div>
             </div>

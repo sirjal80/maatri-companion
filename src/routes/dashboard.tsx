@@ -30,8 +30,9 @@ function babySize(week: number, lang: Lang) {
 
 function Dashboard() {
   const { tr, lang } = useLang();
-  const { profile, updateProfile, phase, setPhase } = useAppState();
+  const { profile, updateProfile, phase, setPhase, user } = useAppState();
   const week = profile.week ?? 20;
+  const userName = user?.name || (lang === "ne" ? "आमा" : "Aama❤️");
 
   const ppTips =
     lang === "ne"
@@ -66,7 +67,7 @@ function Dashboard() {
       <div className="mx-auto max-w-5xl">
         {phase === "postpartum" && (
           <div className="mb-5 rounded-2xl border border-lavender/40 bg-secondary/60 px-5 py-3 text-sm text-secondary-foreground">
-            🎉 {tr("postpartumBanner")}
+            {tr("postpartumBanner")}
           </div>
         )}
 
@@ -79,7 +80,7 @@ function Dashboard() {
                 {phase === "postpartum" ? tr("postpartumMode") : tr("pregnancyMode")}
               </p>
               <h1 className="mt-1 font-display text-3xl font-semibold sm:text-4xl">
-                {lang === "ne" ? "नमस्ते" : "Hello"}, {profile.name || (lang === "ne" ? "आमा" : "Mama")} 🌸
+                {lang === "ne" ? "नमस्ते आमा❤️" : "Hey Aama❤️"}
               </h1>
               {phase === "pregnancy" && (
                 <p className="mt-2 text-muted-foreground">
@@ -108,6 +109,64 @@ function Dashboard() {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_320px]">
+          <div className="glass-card rounded-3xl p-6">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">{tr("personalInfo")}</p>
+                <h2 className="mt-2 font-display text-2xl font-semibold">{userName}</h2>
+                {user ? (
+                  <p className="mt-2 text-sm text-muted-foreground">{user.email}</p>
+                ) : (
+                  <p className="mt-2 text-sm text-muted-foreground">{tr("guestProfileNote")}</p>
+                )}
+              </div>
+            </div>
+            <div className="mt-6 space-y-4 text-sm">
+              <label className="block">
+                <span className="text-muted-foreground">{tr("dueDate")}</span>
+                <input
+                  type="date"
+                  value={profile.dueDate ?? ""}
+                  onChange={(event) => updateProfile({ dueDate: event.target.value })}
+                  className="mt-2 w-full rounded-2xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                />
+              </label>
+              <label className="block">
+                <span className="text-muted-foreground">{tr("bloodGroup")}</span>
+                <input
+                  value={profile.bloodGroup ?? ""}
+                  onChange={(event) => updateProfile({ bloodGroup: event.target.value })}
+                  placeholder={lang === "ne" ? "A+, B-..." : "A+, B-..."}
+                  className="mt-2 w-full rounded-2xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                />
+              </label>
+              <label className="block">
+                <span className="text-muted-foreground">{tr("emergencyContact")}</span>
+                <input
+                  value={profile.emergencyContact ?? ""}
+                  onChange={(event) => updateProfile({ emergencyContact: event.target.value })}
+                  placeholder={lang === "ne" ? "९८४..." : "+977 ..."}
+                  className="mt-2 w-full rounded-2xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="glass-card rounded-3xl p-6">
+            <h2 className="font-display text-2xl font-semibold">{tr("wellnessQuickTips")}</h2>
+            <p className="mt-3 text-sm text-muted-foreground">{tr("wellnessQuickIntro")}</p>
+            <div className="mt-6 grid gap-3">
+              <div className="rounded-3xl bg-blush/80 p-4 text-sm text-primary">
+                {tr("updateProfileTip")}
+              </div>
+              <div className="rounded-3xl bg-secondary/80 p-4 text-sm text-secondary-foreground">
+                {tr("chatProfileTip")}
+              </div>
+            </div>
           </div>
         </div>
 

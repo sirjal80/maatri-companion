@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import favicon from "../../Gemini_Generated_Image_20eqa720eqa720eq.png?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LangProvider } from "../lib/i18n";
 import { AppStateProvider } from "../lib/app-state";
@@ -97,6 +98,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary" },
     ],
     links: [
+      { rel: "icon", href: favicon },
+      { rel: "apple-touch-icon", href: favicon },
       {
         rel: "stylesheet",
         href: appCss,

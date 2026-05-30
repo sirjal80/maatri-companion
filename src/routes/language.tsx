@@ -26,21 +26,21 @@ function LanguagePage() {
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <button
             onClick={() => pick("ne")}
-            className="glass-card group flex flex-col items-center gap-2 rounded-3xl p-8 text-left transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-soft"
+            className="glass-card group flex flex-col items-center gap-2 rounded-3xl p-8 text-left transition-all hover:-translate-y-1 hover:border-secondary/50 hover:shadow-soft"
           >
             <span className="font-display text-3xl font-semibold text-foreground">नेपाली</span>
             <span className="text-sm text-muted-foreground">Nepali</span>
-            <span className="mt-3 inline-flex rounded-full bg-blush px-3 py-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+            <span className="mt-3 inline-flex rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground opacity-0 transition-opacity group-hover:opacity-100">
               जारी राख्नुहोस् →
             </span>
           </button>
           <button
             onClick={() => pick("en")}
-            className="glass-card group flex flex-col items-center gap-2 rounded-3xl p-8 text-left transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-soft"
+            className="glass-card group flex flex-col items-center gap-2 rounded-3xl p-8 text-left transition-all hover:-translate-y-1 hover:border-secondary/50 hover:shadow-soft"
           >
             <span className="font-display text-3xl font-semibold text-foreground">English</span>
             <span className="text-sm text-muted-foreground">अंग्रेजी</span>
-            <span className="mt-3 inline-flex rounded-full bg-blush px-3 py-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+            <span className="mt-3 inline-flex rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground opacity-0 transition-opacity group-hover:opacity-100">
               Continue →
             </span>
           </button>
